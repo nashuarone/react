@@ -1,20 +1,27 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import { useFetch } from './useFetch'
 
 function App() {
-  const [posts, setPosts] = useState([])
-
-  const fetchData = async () => {
-    await fetch('https://jsonplaceholder.typicode.com/posts').then(res => res.json()).then(data => setPosts(data))
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [posts.length])
+  const {
+    data,
+    isLoading,
+    error,
+    refetch
+  } = useFetch('https://jsonplaceholder.typicode.com/posts');
 
   return (
     <>
-      {posts?.map(item => <div key={item.id}>{item.title}</div>) }
+      <div>
+        <button onClick={() => refetch({
+          params: {
+            _limit: 3
+          }
+        })}>
+          Перезапросить
+        </button>
+      </div>
+      {isLoading && 'Загрузка...'}
+      {error && 'Произошла ошибка'}
+      {data && !isLoading && data.map(item => <div key={item.id}>{item.title}</div>)}
     </>
   )
 }
